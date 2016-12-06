@@ -28,11 +28,14 @@ public class Gui extends JFrame implements ActionListener {
 
     JTextField searchTagField = new JTextField("");
     JTextField numResultsStr = new JTextField("10");
-    JPanel onePanel;
+    static JPanel onePanel;
     JScrollPane oneScrollPanel;
     JButton testButton = new JButton("Test");
     JButton searchButton = new JButton("Search");
-
+    JButton saveButton = new JButton("Save");
+    JButton deleteButton = new JButton("Delete");
+    JButton loadButton = new JButton("Load");
+    
     static int frameWidth = 800;
     static int frameHeight = 600;
 
@@ -43,8 +46,15 @@ public class Gui extends JFrame implements ActionListener {
 	buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
 	// add testButton to bottom subpanel
 	buttonsPanel.add(testButton);
+        buttonsPanel.add(saveButton);
+        buttonsPanel.add(loadButton);
+        buttonsPanel.add(deleteButton);
 	// add listener for testButton clicks
 	testButton.addActionListener(this);
+        loadButton.addActionListener(this);
+        saveButton.addActionListener(this);
+        deleteButton.addActionListener(this);
+
 
 	/*
 	System.out.println("testButton at " +
@@ -193,6 +203,13 @@ public class Gui extends JFrame implements ActionListener {
 	String photoUrl = "http://farm"+farm+".static.flickr.com/"
 	    +server+"/"+id+"_"+secret+".jpg";
 	System.out.println(photoUrl);
+        // get image at loc
+        Image photoImg = getImageURL(photoUrl);
+        onePanel.add(new JLabel(new ImageIcon(photoImg)));
+
+	onePanel.revalidate();
+	onePanel.repaint();
+        
 
     }
 
@@ -206,10 +223,19 @@ public class Gui extends JFrame implements ActionListener {
 	else if (e.getSource() == searchTagField) {
 	    System.out.println("searchTagField: " + searchTagField.getText());
 	}
+        else if (e.getSource() == saveButton){
+            System.out.println("Save Button Clicked!");
+        }
+        else if (e.getSource() == loadButton){
+            System.out.println("Load Button Clicked!");
+        }
+        else if (e.getSource() == deleteButton){
+            System.out.println("Delete Button Clicked!");
+        }
     }
 
     // get image at URL loc
-    Image getImageURL(String loc) {
+    static Image getImageURL(String loc) {
         Image img = null;
         try {
             final URL url = new URL(loc);
