@@ -25,7 +25,8 @@ import com.google.gson.*;
 import javax.imageio.ImageIO;
 
 public class Gui extends JFrame implements ActionListener {
-
+    
+    ArrayList <Photo> photoArray;
     JTextField searchTagField = new JTextField("");
     JTextField numResultsStr = new JTextField("10");
     static JPanel onePanel;
@@ -42,6 +43,8 @@ public class Gui extends JFrame implements ActionListener {
     public Gui() {
 
 	// create bottom subpanel with buttons, flow layout
+        photoArray = new ArrayList <Photo> ();
+        
 	JPanel buttonsPanel = new JPanel();
 	buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
 	// add testButton to bottom subpanel
@@ -206,7 +209,7 @@ public class Gui extends JFrame implements ActionListener {
         // get image at loc
         Image photoImg = getImageURL(photoUrl);
         onePanel.add(new JLabel(new ImageIcon(photoImg)));
-
+        onePanel.add(new JButton(new ImageIcon(photoImg)));
 	onePanel.revalidate();
 	onePanel.repaint();
         
