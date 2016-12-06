@@ -10,7 +10,6 @@ class App {
     int pages;
     int perpage;
     PhotoInfo [] photo;
-
 }
 
 class PhotoInfo {
@@ -28,5 +27,3 @@ class PhotoInfo {
     float latitude;
     int accuracy;
 }
-
-    
