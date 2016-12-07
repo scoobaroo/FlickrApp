@@ -231,18 +231,13 @@ public class Gui extends JFrame implements ActionListener {
     }
     
     public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
-        System.out.println("Sending http GET request:");
-	System.out.println(testText);
-
+        System.out.println("Sending http GET request:"+testText);
         URL obj = new URL(testText);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
-
 	// get response
         int responseCode = con.getResponseCode();
-
 	System.out.println("Response Code : " + responseCode);
-
 	// read and construct response String
         BufferedReader in = new BufferedReader(new InputStreamReader
 					       (con.getInputStream()));
@@ -269,12 +264,19 @@ public class Gui extends JFrame implements ActionListener {
 	    +server+"/"+id+"_"+secret+".jpg";
 	System.out.println(photoUrl);
         // get image at loc
-        Image photoImg = getImageURL(photoUrl);
+        Image photoImg = getImageURL(photoUrl); 
+        BufferedImage bufferedImg = (BufferedImage) photoImg;
+        double height = bufferedImg.getHeight();
+        double width = bufferedImg.getWidth();
+        double ratio = 200 / height;
+        Image scaledImg = bufferedImg.getScaledInstance((int) (width*ratio), 200, BufferedImage.TYPE_INT_ARGB);
         Photo photo = new Photo();
-        photo.image = photoImg;
+        photo.image = scaledImg;
         photo.url = photoUrl;
         photoArray.add(photo);
-        onePanel.add(new JButton(new ImageIcon(photoImg)));
+        System.out.println(photo);
+            
+        onePanel.add(new JButton(new ImageIcon(photo.image)));
 	onePanel.revalidate();
 	onePanel.repaint();
     }
@@ -315,8 +317,7 @@ public class Gui extends JFrame implements ActionListener {
 	System.out.println("Response Code : " + responseCode);
 
 	// read and construct response String
-        BufferedReader in = new BufferedReader(new InputStreamReader
-					       (con.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
 
@@ -357,6 +358,12 @@ public class Gui extends JFrame implements ActionListener {
             System.out.println(photo);
             
             onePanel.add(new JButton(new ImageIcon(photoImg)));
+        }
+        
+        for(int k=0; k<photoArray.size(); k++){
+            Photo photo = photoArray.get(k);
+            Image image = photo.image;
+            onePanel.add(new JButton(new ImageIcon(image)));
         }
         
 	onePanel.revalidate();
