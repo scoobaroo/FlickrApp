@@ -86,7 +86,7 @@ public class Gui extends JFrame implements ActionListener {
 	JPanel textFieldSubPanel = new JPanel(new FlowLayout());
 	// create and add label to subpanel
 	JLabel tl = new JLabel("Enter search tag:");
-	textFieldSubPanel.add(tl);s
+	textFieldSubPanel.add(tl);
 	// set width of left text field
 	searchTagField.setColumns(23);
 	// add listener for typing in left text field
@@ -210,21 +210,11 @@ public class Gui extends JFrame implements ActionListener {
     
     public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
         System.out.println("Sending http GET request:"+testText);
-	Response responseObject = Get(testText);
-	System.out.println("# photos = " + responseObject.photos.photo.length);
-	System.out.println("Photo 0:");
-	int farm = responseObject.photos.photo[0].farm;
-	String server = responseObject.photos.photo[0].server;
-	String id = responseObject.photos.photo[0].id;
-	String secret = responseObject.photos.photo[0].secret;
-	String photoUrl = "http://farm"+farm+".static.flickr.com/"
-	    +server+"/"+id+"_"+secret+".jpg";
-	System.out.println(photoUrl);
         // get image at loc
-        Image photoImg = getImageURL(photoUrl); 
+        Image photoImg = getImageURL(testText); 
         Photo photo = new Photo();
         photo.image = getScaledImg(photoImg);
-        photo.url = photoUrl;
+        photo.url = testText;
         photoArray.add(photo);
         System.out.println(photo);   
         onePanel.add(new JButton(new ImageIcon(photo.image)));
@@ -232,7 +222,7 @@ public class Gui extends JFrame implements ActionListener {
 	onePanel.repaint();
     }
     
-    public Response Get(String url) throws MalformedURLException, ProtocolException, IOException{
+    public Response Get(String url) throws MalformedURLException, ProtocolException, IOException {
 	System.out.println("Sending http GET request:");
 	System.out.println(url);
 	// open http connection
@@ -296,12 +286,10 @@ public class Gui extends JFrame implements ActionListener {
             photo.url = photoUrl;
             photoArray.add(photo);
             System.out.println(photo);
-            onePanel.add(new JButton(new ImageIcon(photo.image)));
         }
         for(int k=0; k<photoArray.size(); k++){
             Photo photo = photoArray.get(k);
-            Image image = photo.image;
-            onePanel.add(new JButton(new ImageIcon(image)));
+            onePanel.add(new JButton(new ImageIcon(photo.image)));
         }
 	onePanel.revalidate();
 	onePanel.repaint();
@@ -319,7 +307,7 @@ public class Gui extends JFrame implements ActionListener {
     public void Save(){
           try{
             // Create file 
-            FileWriter fstream = new FileWriter("../photo_album.txt");
+            FileWriter fstream = new FileWriter("./photo_album.txt");
             BufferedWriter out = new BufferedWriter(fstream);
             for(int i = 0; i < photoArray.size(); i++){
                 out.write(photoArray.get(i).url + "\n");
@@ -334,7 +322,7 @@ public class Gui extends JFrame implements ActionListener {
     
     public void Load() throws MalformedURLException, IOException{
         // The name of the file to open.
-        String fileName = "../photo_album.txt";
+        String fileName = "./photo_album.txt";
         // This will reference one line at a time
         String line = null;
         try {
@@ -364,7 +352,7 @@ public class Gui extends JFrame implements ActionListener {
             System.out.println("searchTagField: " + searchTagField.getText());
             String searchText = searchTagField.getText();
             try {
-                Get(searchText);
+                Search(searchText);
             } catch (MalformedURLException ex) {
                 Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
