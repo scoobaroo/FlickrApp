@@ -22,11 +22,18 @@ import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import com.google.gson.*;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class Gui extends JFrame implements ActionListener {
     
     ArrayList <Photo> photoArray;
+    ArrayList <Photo> deleteArray;
+    private String[] searchTextArray;
+
     JTextField searchTagField = new JTextField("");
     JTextField numResultsStr = new JTextField("10");
     static JPanel onePanel;
@@ -36,6 +43,7 @@ public class Gui extends JFrame implements ActionListener {
     JButton saveButton = new JButton("Save");
     JButton deleteButton = new JButton("Delete");
     JButton loadButton = new JButton("Load");
+    JButton exitButton = new JButton("Exit");
     
     static int frameWidth = 800;
     static int frameHeight = 600;
@@ -44,6 +52,7 @@ public class Gui extends JFrame implements ActionListener {
 
 	// create bottom subpanel with buttons, flow layout
         photoArray = new ArrayList <Photo> ();
+        deleteArray = new ArrayList <Photo> ();
         
 	JPanel buttonsPanel = new JPanel();
 	buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
@@ -52,12 +61,13 @@ public class Gui extends JFrame implements ActionListener {
         buttonsPanel.add(saveButton);
         buttonsPanel.add(loadButton);
         buttonsPanel.add(deleteButton);
+        buttonsPanel.add(exitButton);
 	// add listener for testButton clicks
 	testButton.addActionListener(this);
         loadButton.addActionListener(this);
         saveButton.addActionListener(this);
         deleteButton.addActionListener(this);
-
+        exitButton.addActionListener(this);
 
 	/*
 	System.out.println("testButton at " +
@@ -156,10 +166,10 @@ public class Gui extends JFrame implements ActionListener {
         request += "&format=json&nojsoncallback=1&extras=geo";
         request += "&api_key=" + "f7b135fed95b3221d0bfbb5fd6540a94";
 
-	// optional search fields
-	//String userId = "88935360@N05";
-	//request += "&user_id=" + userId;
-	//request += "&tags=hydrocephalic";
+//	 optional search fields
+	String userId = "88935360@N05";
+	request += "&user_id=" + userId;
+	request += "&tags=hydrocephalic";
 
 	if (key.length() != 0) {
 	    request += "&tags="+key;
@@ -215,13 +225,163 @@ public class Gui extends JFrame implements ActionListener {
         
 
     }
+    
+    public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
+        System.out.println("Sending http GET request:");
+	System.out.println(testText);
+
+        URL obj = new URL(testText);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+
+	// get response
+        int responseCode = con.getResponseCode();
+
+	System.out.println("Response Code : " + responseCode);
+
+	// read and construct response String
+        BufferedReader in = new BufferedReader(new InputStreamReader
+					       (con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        System.out.println(response);
+
+	Gson gson = new Gson();
+	String s = response.toString();
+
+	Response responseObject = gson.fromJson(s, Response.class);
+	System.out.println("# photos = " + responseObject.photos.photo.length);
+	System.out.println("Photo 0:");
+	int farm = responseObject.photos.photo[0].farm;
+	String server = responseObject.photos.photo[0].server;
+	String id = responseObject.photos.photo[0].id;
+	String secret = responseObject.photos.photo[0].secret;
+	String photoUrl = "http://farm"+farm+".static.flickr.com/"
+	    +server+"/"+id+"_"+secret+".jpg";
+	System.out.println(photoUrl);
+        // get image at loc
+        Image photoImg = getImageURL(photoUrl);
+        Photo photo = new Photo();
+        photo.image = photoImg;
+        photo.url = photoUrl;
+        photoArray.add(photo);
+        onePanel.add(new JButton(new ImageIcon(photoImg)));
+	onePanel.revalidate();
+	onePanel.repaint();
+    }
+    
+    public void Get(String inputSearchText) throws ProtocolException, MalformedURLException, IOException{
+                // tag to search for
+        searchTextArray = inputSearchText.split("");
+        for(int j=0; j<searchTextArray.length ; j++){
+            if (searchTextArray[j]==" "){
+                searchTextArray[j]="%20";
+            }
+        }
+        String searchText;
+        searchText = String.join("", searchTextArray);
+        System.out.println(searchText);
+	String key = "SFSUCS413F16Test";
+	String api  = "https://api.flickr.com/services/rest/?method=flickr.photos.search";
+	// number of results per page
+        String num = numResultsStr.getText();
+        String request = api + "&per_page=" + num;
+        request += "&format=json&nojsoncallback=1&extras=geo";
+        request += "&api_key=" + "f7b135fed95b3221d0bfbb5fd6540a94";
+
+//	 optional search fields
+	String userId = "88935360@N05";
+	request += "&user_id=" + userId;
+	request += "&tags="+searchText;
+
+	if (key.length() != 0) {
+	    request += "&tags="+key;
+	}
+
+	System.out.println("Sending http GET request:");
+	System.out.println(request);
+
+	// open http connection
+	URL obj = new URL(request);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+	// send GET request
+        con.setRequestMethod("GET");
+
+	// get response
+        int responseCode = con.getResponseCode();
+
+	System.out.println("Response Code : " + responseCode);
+
+	// read and construct response String
+        BufferedReader in = new BufferedReader(new InputStreamReader
+					       (con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+	System.out.println(response);
+
+	Gson gson = new Gson();
+	String s = response.toString();
+
+	Response responseObject = gson.fromJson(s, Response.class);
+	System.out.println("# photos = " + responseObject.photos.photo.length);
+	
+        // get image at loc
+        for(int i=0; i<responseObject.photos.photo.length; i++){
+            System.out.println("Photo: " + i);
+            int farm = responseObject.photos.photo[i].farm;
+            String server = responseObject.photos.photo[i].server;
+            String id = responseObject.photos.photo[i].id;
+            String secret = responseObject.photos.photo[i].secret;
+            String photoUrl = "http://farm"+farm+".static.flickr.com/"+server+"/"+id+"_"+secret+".jpg";
+            System.out.println(photoUrl);
+            Image photoImg = getImageURL(photoUrl);
+            Photo photo = new Photo();
+            photo.image = photoImg;
+            photo.url = photoUrl;
+            photoArray.add(photo);
+            onePanel.add(new JButton(new ImageIcon(photoImg)));
+        }
+        
+	onePanel.revalidate();
+	onePanel.repaint();
+    }
 
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == searchButton) {
 	    System.out.println("Search");
-	}
+            System.out.println("searchTagField: " + searchTagField.getText());
+            String searchText = searchTagField.getText();
+            try {
+                Get(searchText);
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 	else if (e.getSource() == testButton) {
 	    System.out.println("Test");
+            System.out.println("testSearchTagField: " + searchTagField.getText());
+            String testText = searchTagField.getText();
+            try {
+                Test(testText);
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
 	else if (e.getSource() == searchTagField) {
 	    System.out.println("searchTagField: " + searchTagField.getText());
@@ -234,6 +394,11 @@ public class Gui extends JFrame implements ActionListener {
         }
         else if (e.getSource() == deleteButton){
             System.out.println("Delete Button Clicked!");
+            Photo photo = deleteArray.remove(0);
+            photoArray.remove(photo);
+        }
+        else if (e.getSource() == exitButton){
+            System.exit(0);
         }
     }
 

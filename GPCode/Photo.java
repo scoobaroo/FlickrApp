@@ -11,6 +11,6 @@ import java.awt.Image;
  * @author suejanehan
  */
 public class Photo {
-    Image photo;
+    Image image;
     String url;
 }
