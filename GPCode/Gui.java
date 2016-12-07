@@ -22,6 +22,10 @@ import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import com.google.gson.*;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.util.logging.Level;
@@ -343,14 +347,62 @@ public class Gui extends JFrame implements ActionListener {
             photo.url = photoUrl;
             photoArray.add(photo);
             System.out.println(photo);
+            
+            int height = photoImg.getHeight();
+            int weidth = photoImg.getWidth();
+            double ratio = 200 / height;
+            
             onePanel.add(new JButton(new ImageIcon(photoImg)));
         }
         
 	onePanel.revalidate();
 	onePanel.repaint();
     }
+    
+    public void Save(){
+          try{
+            // Create file 
+            FileWriter fstream = new FileWriter("../photo_album.txt");
+            BufferedWriter out = new BufferedWriter(fstream);
+            for(int i = 0; i < photoArray.size(); i++){
+                out.write(photoArray.get(i).url + "\n");
+                System.out.println(photoArray.get(i).url);
+            }
+            //Close the output stream
+            out.close();
+            }catch (Exception e){//Catch exception if any
+            System.err.println("Error: " + e.getMessage());
+            }
+    }
+    
+    public void Load() throws MalformedURLException, IOException{
+        
+        // The name of the file to open.
+        String fileName = "../photo_album.txt";
+        // This will reference one line at a time
+        String line = null;
+        try {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader = new FileReader(fileName);
 
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+                Test(line);
+            }   
+            // Always close files.
+            bufferedReader.close();         
+        }catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" + 
+                fileName + "'");
+        }
+    }
+    
     public void actionPerformed(ActionEvent e) {
+        System.out.println( e.getSource() );
 	if (e.getSource() == searchButton) {
 	    System.out.println("Search");
             System.out.println("searchTagField: " + searchTagField.getText());
@@ -380,9 +432,15 @@ public class Gui extends JFrame implements ActionListener {
 	}
         else if (e.getSource() == saveButton){
             System.out.println("Save Button Clicked!");
+            Save();
         }
         else if (e.getSource() == loadButton){
             System.out.println("Load Button Clicked!");
+            try {
+                Load();
+            } catch (IOException ex) {
+                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         else if (e.getSource() == deleteButton){
             System.out.println("Delete Button Clicked!");
