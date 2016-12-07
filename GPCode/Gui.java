@@ -54,7 +54,6 @@ public class Gui extends JFrame implements ActionListener {
     public Gui() {
         //create a ArrayList of Photos to store images and urls
         //create a Photo of deletePhoto to remember which photo was selcted for deletion
-        Photo deletePhoto = new Photo ();
         photoArray = new ArrayList <Photo> ();
         // create bottom subpanel with buttons, flow layout
 	JPanel buttonsPanel = new JPanel();
@@ -129,18 +128,6 @@ public class Gui extends JFrame implements ActionListener {
 	add(oneScrollPanel);
 	// add panel with buttons and textfields to main frame
 	add(textFieldPanel);
-	// url for image to fetch
-        String loc = "http://unixlab.sfsu.edu/~whsu/csc690/P1/TestImages/Test7.png";
-        // get image at loc
-        Image img = getImageURL(loc);
-        String loc2 = "http://unixlab.sfsu.edu/~whsu/csc690/P1/TestImages/Test8.png";
-        // get image at loc
-        Image img2 = getImageURL(loc2);
-        // create ImageIcon from image
-        // create JLabel from ImageIcon
-        // add JLabel to onePanel
-        onePanel.add(new JLabel(new ImageIcon(img)));
-        onePanel.add(new JLabel(new ImageIcon(img2)));
 	onePanel.revalidate();
 	onePanel.repaint();
 	// connect updated onePanel to oneScrollPanel
@@ -201,9 +188,6 @@ public class Gui extends JFrame implements ActionListener {
 	    +server+"/"+id+"_"+secret+".jpg";
 	System.out.println(photoUrl);
         // get image at loc
-        Image photoImg = getImageURL(photoUrl);
-        onePanel.add(new JLabel(new ImageIcon(photoImg)));
-        onePanel.add(new JButton(new ImageIcon(photoImg)));
 	onePanel.revalidate();
 	onePanel.repaint();
     }
@@ -217,16 +201,11 @@ public class Gui extends JFrame implements ActionListener {
         photo.url = testText;
         photoArray.add(photo);
         
-        System.out.println(photo);   
+        System.out.println(photo);
+    
         onePanel.add(new JButton(new ImageIcon(photo.image)));
 	onePanel.revalidate();
 	onePanel.repaint();
-        System.out.println("oneScrollPanel Components: ");
-	Component comp[] = oneScrollPanel.getComponents();
-	for (int i=0; i<comp.length; i++) {
-	    System.out.println(comp[i].getClass().getName() +
-			       "@" + Integer.toHexString(hashCode()));
-        }
     }
     
     public Response Get(String url) throws MalformedURLException, ProtocolException, IOException {
@@ -294,12 +273,18 @@ public class Gui extends JFrame implements ActionListener {
             photoArray.add(photo);
             System.out.println(photo);
         }
-        for(int k=0; k<photoArray.size(); k++){
-            Photo photo = photoArray.get(k);
-            onePanel.add(new JButton(new ImageIcon(photo.image)));
-        }
+        Display();
 	onePanel.revalidate();
 	onePanel.repaint();
+    }
+    
+    public void Display(){
+        for(int k=0; k<photoArray.size(); k++){
+            Photo photo = photoArray.get(k);
+            JButton button = new JButton(new ImageIcon(photo.image));
+            button.addActionListener(this);
+            onePanel.add(button);
+        }
     }
     
     public Image getScaledImg(Image inputImg){
@@ -396,14 +381,21 @@ public class Gui extends JFrame implements ActionListener {
         else if (e.getSource() == deleteButton){
             System.out.println("Delete Button Clicked!");
             photoArray.remove(deletePhoto);
+            onePanel.remove(deletePhoto);
             onePanel.revalidate();
             onePanel.repaint();
         }
         else if (e.getSource() == exitButton){
             System.exit(0);
         }
+        for (Component b : onePanel.getComponents()){
+            if(e.getSource() == b){
+                deletePhoto = (Photo) b;
+                System.out.println("Inside button Selector Block" + b);
+            }
+        }
     }
-
+    
     // get image at URL loc
     static Image getImageURL(String loc) {
         Image img = null;

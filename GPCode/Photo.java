@@ -6,11 +6,12 @@
 package GPCode;
 import java.awt.image.BufferedImage;
 import java.awt.Image;
+import javax.swing.JButton;
 /**
  *
  * @author suejanehan
  */
-public class Photo {
+public class Photo extends JButton {
     Image image;
     String url;
 }
