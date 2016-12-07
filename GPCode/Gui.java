@@ -232,28 +232,7 @@ public class Gui extends JFrame implements ActionListener {
     
     public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
         System.out.println("Sending http GET request:"+testText);
-        URL obj = new URL(testText);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
-	// get response
-        int responseCode = con.getResponseCode();
-	System.out.println("Response Code : " + responseCode);
-	// read and construct response String
-        BufferedReader in = new BufferedReader(new InputStreamReader
-					       (con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-        System.out.println(response);
-
-	Gson gson = new Gson();
-	String s = response.toString();
-
-	Response responseObject = gson.fromJson(s, Response.class);
+	Response responseObject = Get(testText);
 	System.out.println("# photos = " + responseObject.photos.photo.length);
 	System.out.println("Photo 0:");
 	int farm = responseObject.photos.photo[0].farm;
@@ -265,23 +244,44 @@ public class Gui extends JFrame implements ActionListener {
 	System.out.println(photoUrl);
         // get image at loc
         Image photoImg = getImageURL(photoUrl); 
-        BufferedImage bufferedImg = (BufferedImage) photoImg;
-        double height = bufferedImg.getHeight();
-        double width = bufferedImg.getWidth();
-        double ratio = 200 / height;
-        Image scaledImg = bufferedImg.getScaledInstance((int) (width*ratio), 200, BufferedImage.TYPE_INT_ARGB);
         Photo photo = new Photo();
-        photo.image = scaledImg;
+        photo.image = getScaledImg(photoImg);
         photo.url = photoUrl;
         photoArray.add(photo);
-        System.out.println(photo);
-            
+        System.out.println(photo);   
         onePanel.add(new JButton(new ImageIcon(photo.image)));
 	onePanel.revalidate();
 	onePanel.repaint();
     }
     
-    public void Get(String inputSearchText) throws ProtocolException, MalformedURLException, IOException{
+    public Response Get(String url) throws MalformedURLException, ProtocolException, IOException{
+	System.out.println("Sending http GET request:");
+	System.out.println(url);
+	// open http connection
+	URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+	// send GET request
+        con.setRequestMethod("GET");
+	// get response
+        int responseCode = con.getResponseCode();
+	System.out.println("Response Code : " + responseCode);
+	// read and construct response String
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+	System.out.println(response);
+	Gson gson = new Gson();
+	String s = response.toString();
+	Response responseObject = gson.fromJson(s, Response.class);
+	System.out.println("# photos = " + responseObject.photos.photo.length);
+        return responseObject;
+    }
+    
+    public void Search(String inputSearchText) throws ProtocolException, MalformedURLException, IOException{
                 // tag to search for
         searchTextArray = inputSearchText.split("");
         for(int j=0; j<searchTextArray.length ; j++){
@@ -305,35 +305,7 @@ public class Gui extends JFrame implements ActionListener {
 	System.out.println(request);
 
 	// open http connection
-	URL obj = new URL(request);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-	// send GET request
-        con.setRequestMethod("GET");
-
-	// get response
-        int responseCode = con.getResponseCode();
-
-	System.out.println("Response Code : " + responseCode);
-
-	// read and construct response String
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-	System.out.println(response);
-
-	Gson gson = new Gson();
-	String s = response.toString();
-
-	Response responseObject = gson.fromJson(s, Response.class);
-	System.out.println("# photos = " + responseObject.photos.photo.length);
-	
+        Response responseObject = Get(request);
         // get image at loc
         for(int i=0; i<responseObject.photos.photo.length; i++){
             System.out.println("Photo: " + i);
@@ -343,21 +315,14 @@ public class Gui extends JFrame implements ActionListener {
             String secret = responseObject.photos.photo[i].secret;
             String photoUrl = "http://farm"+farm+".static.flickr.com/"+server+"/"+id+"_"+secret+".jpg";
             System.out.println(photoUrl);
-            Image photoImg = getImageURL(photoUrl);
-   
-            
-            BufferedImage bufferedImg = (BufferedImage) photoImg;
-            double height = bufferedImg.getHeight();
-            double width = bufferedImg.getWidth();
-            double ratio = 200 / height;
-            Image scaledImg = bufferedImg.getScaledInstance((int) (width*ratio), 200,BufferedImage.TYPE_INT_ARGB);
+            Image photoImg = getImageURL(photoUrl);            
             Photo photo = new Photo();
-            photo.image = scaledImg;
+            photo.image = getScaledImg(photoImg);
             photo.url = photoUrl;
             photoArray.add(photo);
             System.out.println(photo);
             
-            onePanel.add(new JButton(new ImageIcon(photoImg)));
+            onePanel.add(new JButton(new ImageIcon(photo.image)));
         }
         
         for(int k=0; k<photoArray.size(); k++){
@@ -368,6 +333,15 @@ public class Gui extends JFrame implements ActionListener {
         
 	onePanel.revalidate();
 	onePanel.repaint();
+    }
+    
+    public Image getScaledImg(Image inputImg){
+            BufferedImage bufferedImg = (BufferedImage) inputImg;
+            double height = bufferedImg.getHeight();
+            double width = bufferedImg.getWidth();
+            double ratio = 200 / height;
+            Image scaledImg = bufferedImg.getScaledInstance((int) (width*ratio), 200,BufferedImage.TYPE_INT_ARGB);
+            return scaledImg;
     }
     
     public void Save(){
@@ -456,6 +430,8 @@ public class Gui extends JFrame implements ActionListener {
         else if (e.getSource() == deleteButton){
             System.out.println("Delete Button Clicked!");
             photoArray.remove(deletePhoto);
+            onePanel.revalidate();
+            onePanel.repaint();
         }
         else if (e.getSource() == exitButton){
             System.exit(0);
