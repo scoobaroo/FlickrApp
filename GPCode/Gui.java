@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class Gui extends JFrame implements ActionListener {
-    
     ArrayList <Photo> photoArray;
     Photo deletePhoto;
     private String[] searchTextArray;
@@ -49,31 +48,29 @@ public class Gui extends JFrame implements ActionListener {
     JButton deleteButton = new JButton("Delete");
     JButton loadButton = new JButton("Load");
     JButton exitButton = new JButton("Exit");
-    
     static int frameWidth = 800;
     static int frameHeight = 600;
 
     public Gui() {
-
-	// create bottom subpanel with buttons, flow layout
+        //create a ArrayList of Photos to store images and urls
+        //create a Photo of deletePhoto to remember which photo was selcted for deletion
         Photo deletePhoto = new Photo ();
         photoArray = new ArrayList <Photo> ();
-        
+        // create bottom subpanel with buttons, flow layout
 	JPanel buttonsPanel = new JPanel();
 	buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
-	// add testButton to bottom subpanel
+	// add buttons to bottom subpanel
 	buttonsPanel.add(testButton);
         buttonsPanel.add(saveButton);
         buttonsPanel.add(loadButton);
         buttonsPanel.add(deleteButton);
         buttonsPanel.add(exitButton);
-	// add listener for testButton clicks
+	// add listener for all button clicks
 	testButton.addActionListener(this);
         loadButton.addActionListener(this);
         saveButton.addActionListener(this);
         deleteButton.addActionListener(this);
         exitButton.addActionListener(this);
-
 	/*
 	System.out.println("testButton at " +
 			   testButton.getClass().getName() +
@@ -85,13 +82,11 @@ public class Gui extends JFrame implements ActionListener {
 			       "@" + Integer.toHexString(hashCode()));
 	}
 	*/
-
 	// create middle subpanel with 2 text fields and button, border layout
 	JPanel textFieldSubPanel = new JPanel(new FlowLayout());
 	// create and add label to subpanel
 	JLabel tl = new JLabel("Enter search tag:");
-	textFieldSubPanel.add(tl);
-
+	textFieldSubPanel.add(tl);s
 	// set width of left text field
 	searchTagField.setColumns(23);
 	// add listener for typing in left text field
@@ -132,10 +127,8 @@ public class Gui extends JFrame implements ActionListener {
 	setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 	// add scrollable panel to main frame
 	add(oneScrollPanel);
-
 	// add panel with buttons and textfields to main frame
 	add(textFieldPanel);
-
 	// url for image to fetch
         String loc = "http://unixlab.sfsu.edu/~whsu/csc690/P1/TestImages/Test7.png";
         // get image at loc
@@ -143,13 +136,11 @@ public class Gui extends JFrame implements ActionListener {
         String loc2 = "http://unixlab.sfsu.edu/~whsu/csc690/P1/TestImages/Test8.png";
         // get image at loc
         Image img2 = getImageURL(loc2);
-        
         // create ImageIcon from image
         // create JLabel from ImageIcon
         // add JLabel to onePanel
         onePanel.add(new JLabel(new ImageIcon(img)));
         onePanel.add(new JLabel(new ImageIcon(img2)));
-
 	onePanel.revalidate();
 	onePanel.repaint();
 	// connect updated onePanel to oneScrollPanel
@@ -170,47 +161,35 @@ public class Gui extends JFrame implements ActionListener {
         String request = api + "&per_page=16";
         request += "&format=json&nojsoncallback=1&extras=geo";
         request += "&api_key=" + "f7b135fed95b3221d0bfbb5fd6540a94";
-
 //	 optional search fields
 	String userId = "88935360@N05";
 	request += "&user_id=" + userId;
 	request += "&tags=hydrocephalic";
-
 	if (key.length() != 0) {
 	    request += "&tags="+key;
 	}
-
 	System.out.println("Sending http GET request:");
 	System.out.println(request);
-
 	// open http connection
 	URL obj = new URL(request);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
 	// send GET request
         con.setRequestMethod("GET");
-
 	// get response
         int responseCode = con.getResponseCode();
-
 	System.out.println("Response Code : " + responseCode);
-
 	// read and construct response String
         BufferedReader in = new BufferedReader(new InputStreamReader
 					       (con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
-
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
         in.close();
-
 	System.out.println(response);
-
 	Gson gson = new Gson();
 	String s = response.toString();
-
 	Response responseObject = gson.fromJson(s, Response.class);
 	System.out.println("# photos = " + responseObject.photos.photo.length);
 	System.out.println("Photo 0:");
@@ -227,7 +206,6 @@ public class Gui extends JFrame implements ActionListener {
         onePanel.add(new JButton(new ImageIcon(photoImg)));
 	onePanel.revalidate();
 	onePanel.repaint();
-
     }
     
     public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
@@ -292,7 +270,6 @@ public class Gui extends JFrame implements ActionListener {
         String searchText;
         searchText = String.join("", searchTextArray);
         System.out.println(searchText);
-
 	String api  = "https://api.flickr.com/services/rest/?method=flickr.photos.search";
 	// number of results per page
         String num = numResultsStr.getText();
@@ -300,10 +277,8 @@ public class Gui extends JFrame implements ActionListener {
         request += "&format=json&nojsoncallback=1&extras=geo";
         request += "&api_key=" + "f7b135fed95b3221d0bfbb5fd6540a94";
 	request += "&tags="+searchText;
-
 	System.out.println("Sending http GET request:");
 	System.out.println(request);
-
 	// open http connection
         Response responseObject = Get(request);
         // get image at loc
@@ -321,16 +296,13 @@ public class Gui extends JFrame implements ActionListener {
             photo.url = photoUrl;
             photoArray.add(photo);
             System.out.println(photo);
-            
             onePanel.add(new JButton(new ImageIcon(photo.image)));
         }
-        
         for(int k=0; k<photoArray.size(); k++){
             Photo photo = photoArray.get(k);
             Image image = photo.image;
             onePanel.add(new JButton(new ImageIcon(image)));
         }
-        
 	onePanel.revalidate();
 	onePanel.repaint();
     }
@@ -361,7 +333,6 @@ public class Gui extends JFrame implements ActionListener {
     }
     
     public void Load() throws MalformedURLException, IOException{
-        
         // The name of the file to open.
         String fileName = "../photo_album.txt";
         // This will reference one line at a time
@@ -449,12 +420,10 @@ public class Gui extends JFrame implements ActionListener {
             return null;
         }
         return img;
-
     }
     
     public class GetFlickr {
         GetFlickr() {
         }
-    
     }
 }
