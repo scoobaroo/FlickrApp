@@ -209,17 +209,24 @@ public class Gui extends JFrame implements ActionListener {
     }
     
     public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
-        System.out.println("Sending http GET request:"+testText);
-        // get image at loc
+        System.out.println("Fetching image at: "+testText);
+        // get image at testText
         Image photoImg = getImageURL(testText); 
         Photo photo = new Photo();
         photo.image = getScaledImg(photoImg);
         photo.url = testText;
         photoArray.add(photo);
+        
         System.out.println(photo);   
         onePanel.add(new JButton(new ImageIcon(photo.image)));
 	onePanel.revalidate();
 	onePanel.repaint();
+        System.out.println("oneScrollPanel Components: ");
+	Component comp[] = oneScrollPanel.getComponents();
+	for (int i=0; i<comp.length; i++) {
+	    System.out.println(comp[i].getClass().getName() +
+			       "@" + Integer.toHexString(hashCode()));
+        }
     }
     
     public Response Get(String url) throws MalformedURLException, ProtocolException, IOException {
@@ -253,7 +260,7 @@ public class Gui extends JFrame implements ActionListener {
                 // tag to search for
         searchTextArray = inputSearchText.split("");
         for(int j=0; j<searchTextArray.length ; j++){
-            if (searchTextArray[j]==" "){
+            if (" ".equals(searchTextArray[j])){
                 searchTextArray[j]="%20";
             }
         }
