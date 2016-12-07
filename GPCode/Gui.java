@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import com.google.gson.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -342,15 +343,18 @@ public class Gui extends JFrame implements ActionListener {
             String photoUrl = "http://farm"+farm+".static.flickr.com/"+server+"/"+id+"_"+secret+".jpg";
             System.out.println(photoUrl);
             Image photoImg = getImageURL(photoUrl);
+   
+            
+            BufferedImage bufferedImg = (BufferedImage) photoImg;
+            double height = bufferedImg.getHeight();
+            double width = bufferedImg.getWidth();
+            double ratio = 200 / height;
+            Image scaledImg = bufferedImg.getScaledInstance((int) (width*ratio), 200,BufferedImage.TYPE_INT_ARGB);
             Photo photo = new Photo();
-            photo.image = photoImg;
+            photo.image = scaledImg;
             photo.url = photoUrl;
             photoArray.add(photo);
             System.out.println(photo);
-            
-            int height = photoImg.getHeight();
-            int weidth = photoImg.getWidth();
-            double ratio = 200 / height;
             
             onePanel.add(new JButton(new ImageIcon(photoImg)));
         }
