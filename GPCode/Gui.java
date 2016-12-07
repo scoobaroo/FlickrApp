@@ -31,7 +31,7 @@ import javax.imageio.ImageIO;
 public class Gui extends JFrame implements ActionListener {
     
     ArrayList <Photo> photoArray;
-    ArrayList <Photo> deleteArray;
+    Photo deletePhoto;
     private String[] searchTextArray;
 
     JTextField searchTagField = new JTextField("");
@@ -51,8 +51,8 @@ public class Gui extends JFrame implements ActionListener {
     public Gui() {
 
 	// create bottom subpanel with buttons, flow layout
+        Photo deletePhoto = new Photo ();
         photoArray = new ArrayList <Photo> ();
-        deleteArray = new ArrayList <Photo> ();
         
 	JPanel buttonsPanel = new JPanel();
 	buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
@@ -222,7 +222,6 @@ public class Gui extends JFrame implements ActionListener {
         onePanel.add(new JButton(new ImageIcon(photoImg)));
 	onePanel.revalidate();
 	onePanel.repaint();
-        
 
     }
     
@@ -286,22 +285,14 @@ public class Gui extends JFrame implements ActionListener {
         String searchText;
         searchText = String.join("", searchTextArray);
         System.out.println(searchText);
-	String key = "SFSUCS413F16Test";
+
 	String api  = "https://api.flickr.com/services/rest/?method=flickr.photos.search";
 	// number of results per page
         String num = numResultsStr.getText();
         String request = api + "&per_page=" + num;
         request += "&format=json&nojsoncallback=1&extras=geo";
         request += "&api_key=" + "f7b135fed95b3221d0bfbb5fd6540a94";
-
-//	 optional search fields
-	String userId = "88935360@N05";
-	request += "&user_id=" + userId;
 	request += "&tags="+searchText;
-
-	if (key.length() != 0) {
-	    request += "&tags="+key;
-	}
 
 	System.out.println("Sending http GET request:");
 	System.out.println(request);
@@ -351,6 +342,7 @@ public class Gui extends JFrame implements ActionListener {
             photo.image = photoImg;
             photo.url = photoUrl;
             photoArray.add(photo);
+            System.out.println(photo);
             onePanel.add(new JButton(new ImageIcon(photoImg)));
         }
         
@@ -394,8 +386,7 @@ public class Gui extends JFrame implements ActionListener {
         }
         else if (e.getSource() == deleteButton){
             System.out.println("Delete Button Clicked!");
-            Photo photo = deleteArray.remove(0);
-            photoArray.remove(photo);
+            photoArray.remove(deletePhoto);
         }
         else if (e.getSource() == exitButton){
             System.exit(0);
