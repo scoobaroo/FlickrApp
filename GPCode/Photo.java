@@ -14,9 +14,12 @@ import javax.swing.JButton;
 public class Photo extends JButton {
     Image image;
     String url;
-
-    Photo(ImageIcon imageIcon) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Photo(String text) {
+        super(text);
+    }
+    public Photo(ImageIcon image){
+        super(image);
+    }
+    public Photo() {
     }
 }
-

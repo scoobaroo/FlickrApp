@@ -190,12 +190,9 @@ public class Gui extends JFrame implements ActionListener {
         Image photoImg = getImageURL(testText); 
         ImageIcon scaledImage = new ImageIcon(getScaledImg(photoImg));
         Photo photo = new Photo(scaledImage);
-        photo.url = testText;
         photo.image = getScaledImg(photoImg);
+        photo.url = testText;
         photoArray.add(photo);
-        
-        System.out.println(photo);
-    
         onePanel.add(new Photo(new ImageIcon(photo.image)));
 	onePanel.revalidate();
 	onePanel.repaint();
@@ -275,9 +272,8 @@ public class Gui extends JFrame implements ActionListener {
     public void Display(){
         for(int k=0; k<photoArray.size(); k++){
             Photo photo = photoArray.get(k);
-            JButton button = new JButton(new ImageIcon(photo.image));
-            button.addActionListener(this);
-            onePanel.add(button);
+            photo.addActionListener(this);
+            onePanel.add(photo);
         }
     }
     
