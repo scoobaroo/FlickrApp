@@ -14,12 +14,8 @@ import javax.swing.JButton;
 public class Photo extends JButton {
     Image image;
     String url;
-    public Photo(String text) {
-        super(text);
-    }
+    
     public Photo(ImageIcon image){
         super(image);
-    }
-    public Photo() {
     }
 }
