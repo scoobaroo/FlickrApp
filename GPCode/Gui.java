@@ -187,19 +187,20 @@ public class Gui extends JFrame implements ActionListener {
     public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
         System.out.println("Fetching image at: "+testText);
         // get image at testText
-        Image photoImg = getImageURL(testText); 
+        Image photoImg = getImageURL(testText);            
         ImageIcon scaledImage = new ImageIcon(getScaledImg(photoImg));
         Photo photo = new Photo(scaledImage);
         photo.image = getScaledImg(photoImg);
         photo.url = testText;
+        photo.addActionListener(this);
         photoArray.add(photo);
-        onePanel.add(new Photo(new ImageIcon(photo.image)));
-	onePanel.revalidate();
+        onePanel.add(photo);
+        onePanel.revalidate();
 	onePanel.repaint();
     }
     
     public Response Get(String url) throws MalformedURLException, ProtocolException, IOException {
-	System.out.println("Sending http GET request:");
+	System.out.println("Get - Sending http GET request:");
 	System.out.println(url);
 	// open http connection
 	URL obj = new URL(url);
@@ -243,7 +244,7 @@ public class Gui extends JFrame implements ActionListener {
         request += "&format=json&nojsoncallback=1&extras=geo";
         request += "&api_key=" + "f7b135fed95b3221d0bfbb5fd6540a94";
 	request += "&tags="+searchText;
-	System.out.println("Sending http GET request:");
+	System.out.println("Search - Sending http GET request:");
 	System.out.println(request);
 	// open http connection
         Response responseObject = Get(request);
@@ -381,7 +382,7 @@ public class Gui extends JFrame implements ActionListener {
         for (Component b : onePanel.getComponents()){
             if(e.getSource() == b){
                 deletePhoto = (Photo) b;
-                System.out.println("Inside button Selector Block" + b);
+                System.out.println("Inside button Selector Block: " + b);
             }
         }
     }
