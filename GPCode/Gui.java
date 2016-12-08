@@ -2,26 +2,18 @@ package GPCode;
 
 import com.google.gson.Gson;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import java.awt.*;
 import java.io.IOException;
 import java.awt.event.*;
 import javax.swing.*;
-import java.awt.Frame;
 import java.awt.Component;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.lang.Object;
-import java.net.HttpURLConnection;
 import javax.swing.JFrame;
-import javax.swing.border.*;
 import javax.swing.BoxLayout;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import com.google.gson.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -196,14 +188,15 @@ public class Gui extends JFrame implements ActionListener {
         System.out.println("Fetching image at: "+testText);
         // get image at testText
         Image photoImg = getImageURL(testText); 
-        Photo photo = new Photo();
-        photo.image = getScaledImg(photoImg);
+        ImageIcon scaledImage = new ImageIcon(getScaledImg(photoImg));
+        Photo photo = new Photo(scaledImage);
         photo.url = testText;
+        photo.image = getScaledImg(photoImg);
         photoArray.add(photo);
         
         System.out.println(photo);
     
-        onePanel.add(new JButton(new ImageIcon(photo.image)));
+        onePanel.add(new Photo(new ImageIcon(photo.image)));
 	onePanel.revalidate();
 	onePanel.repaint();
     }
@@ -267,7 +260,8 @@ public class Gui extends JFrame implements ActionListener {
             String photoUrl = "http://farm"+farm+".static.flickr.com/"+server+"/"+id+"_"+secret+".jpg";
             System.out.println(photoUrl);
             Image photoImg = getImageURL(photoUrl);            
-            Photo photo = new Photo();
+            ImageIcon scaledImage = new ImageIcon(getScaledImg(photoImg));
+            Photo photo = new Photo(scaledImage);
             photo.image = getScaledImg(photoImg);
             photo.url = photoUrl;
             photoArray.add(photo);

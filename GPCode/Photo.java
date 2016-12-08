@@ -4,8 +4,8 @@
  * and open the template in the editor.
  */
 package GPCode;
-import java.awt.image.BufferedImage;
 import java.awt.Image;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 /**
  *
@@ -14,4 +14,9 @@ import javax.swing.JButton;
 public class Photo extends JButton {
     Image image;
     String url;
+
+    Photo(ImageIcon imageIcon) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
+
