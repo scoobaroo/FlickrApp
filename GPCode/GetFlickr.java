@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package GPCode;
 
 import com.google.gson.Gson;
@@ -25,7 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-public class Gui extends JFrame implements ActionListener {
+public class GetFlickr extends JFrame implements ActionListener {
     //create an ArrayList of Photos in photoArray
     private ArrayList <Photo> photoArray;
     //create Photo deletePhoto to remember which Photo is selected
@@ -49,10 +54,9 @@ public class Gui extends JFrame implements ActionListener {
     static int frameWidth = 800;
     static int frameHeight = 600;
 
-    public Gui() {
+    public GetFlickr() {
         this.saveButton = new JButton("Save");
         //create a ArrayList of Photos to store images and urls
-        //create a Photo of deletePhoto to remember which photo was selcted for deletion
         photoArray = new ArrayList <Photo> ();
         // create bottom subpanel with buttons, flow layout
 	JPanel buttonsPanel = new JPanel();
@@ -134,7 +138,7 @@ public class Gui extends JFrame implements ActionListener {
     }
     
     public static void main(String [] args) throws Exception {
-	Gui frame = new Gui();
+	GetFlickr frame = new GetFlickr();
 	frame.setTitle("Swing GUI Demo");
 	frame.setSize(frameWidth, frameHeight);
 	frame.setLocationRelativeTo(null);
@@ -298,12 +302,12 @@ public class Gui extends JFrame implements ActionListener {
     public Image getScaledImg(Image inputImg){
             //create bufferedImg to manipulate inputImg
             BufferedImage bufferedImg = (BufferedImage) inputImg;
-            //create height nad width to store values
+            //create height and width to store values
             double height = bufferedImg.getHeight();
             double width = bufferedImg.getWidth();
-            //create ratio to reflect 200 height aspect ratio
+            //create ratio to reflect 200pixels=height aspect
             double ratio = 200 / height;
-            //create scaledimg with getScaledInstance
+            //create scaledImg with getScaledInstance
             Image scaledImg = bufferedImg.getScaledInstance((int) (width*ratio), 200,BufferedImage.TYPE_INT_ARGB);
             return scaledImg;
     }
@@ -359,9 +363,9 @@ public class Gui extends JFrame implements ActionListener {
             //search for searchText when search button is clicked
                 Search(searchText);
             } catch (MalformedURLException ex) {
-                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GetFlickr.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GetFlickr.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 	else if (e.getSource() == testButton) {
@@ -371,9 +375,9 @@ public class Gui extends JFrame implements ActionListener {
             //test testText when test is clicked
                 Test(testText);
             } catch (MalformedURLException ex) {
-                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GetFlickr.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GetFlickr.class.getName()).log(Level.SEVERE, null, ex);
             }
 	}
 	else if (e.getSource() == searchTagField) {
@@ -390,7 +394,7 @@ public class Gui extends JFrame implements ActionListener {
             //load images from photo_album.txt when clicked
                 Load();
             } catch (IOException ex) {
-                Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GetFlickr.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else if (e.getSource() == deleteButton){
@@ -430,10 +434,5 @@ public class Gui extends JFrame implements ActionListener {
             return null;
         }
         return img;
-    }
-    
-    public class GetFlickr {
-        GetFlickr() {
-        }
     }
 }
