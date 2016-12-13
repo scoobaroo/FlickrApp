@@ -15,6 +15,7 @@ public class Photo extends JButton {
     Image image;
     String url;
     
+    //inherit from JButton class
     public Photo(ImageIcon image){
         super(image);
     }

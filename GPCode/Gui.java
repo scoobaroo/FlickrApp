@@ -26,15 +26,20 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class Gui extends JFrame implements ActionListener {
+    //create an ArrayList of Photos in photoArray
     private ArrayList <Photo> photoArray;
+    //create Photo deletePhoto to remember which Photo is selected
     private Photo deletePhoto;
+    //searchTextArray is needed because we need to replace spaces with %20
     private String[] searchTextArray;
+    //create select to remember which item is selected
     private int select;
 
     JTextField searchTagField = new JTextField("");
     JTextField numResultsStr = new JTextField("10");
     static JPanel onePanel;
     JScrollPane oneScrollPanel;
+    //create Buttons
     JButton testButton = new JButton("Test");
     JButton searchButton = new JButton("Search");
     JButton saveButton;
@@ -183,13 +188,17 @@ public class Gui extends JFrame implements ActionListener {
     
     public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
         System.out.println("Fetching image at: "+testText);
-        // get image at testText
+        // fetch image at testText
         Image photoImg = getImageURL(testText);            
+        //create scaled ImageIcon
         ImageIcon scaledImageIcon = new ImageIcon(getScaledImg(photoImg));
+        //create new photo with scaled ImageIcon
         Photo photo = new Photo(scaledImageIcon);
+        //set Photo's variables to match input
         photo.image = getScaledImg(photoImg);
         photo.url = testText;
         photo.addActionListener(this);
+        //add photo to OnePanel and photoArray
         photoArray.add(photo);
         onePanel.add(photo);
         onePanel.revalidate();
@@ -217,6 +226,7 @@ public class Gui extends JFrame implements ActionListener {
         in.close();
 	Gson gson = new Gson();
 	String s = response.toString();
+        //create new responseObject from gson
 	Response responseObject = gson.fromJson(s, Response.class);
         System.out.println(response);
 	System.out.println("# photos = " + responseObject.photos.photo.length);
@@ -224,14 +234,17 @@ public class Gui extends JFrame implements ActionListener {
     }
     
     public void Search(String inputSearchText) throws ProtocolException, MalformedURLException, IOException{
-                // tag to search for
+        // tag to search for
+        //split inputSearchText into array of letters and spaces 
         searchTextArray = inputSearchText.split("");
+        //replace spaces with %20
         for(int j=0; j<searchTextArray.length ; j++){
             if (" ".equals(searchTextArray[j])){
                 searchTextArray[j]="%20";
             }
         }
         String searchText;
+        //create searchText which represents inputSearchText with spaces replaced by %20
         searchText = String.join("", searchTextArray);
         System.out.println("Search String: "+searchText);
 	String api  = "https://api.flickr.com/services/rest/?method=flickr.photos.search";
@@ -254,20 +267,27 @@ public class Gui extends JFrame implements ActionListener {
             String secret = responseObject.photos.photo[i].secret;
             String photoUrl = "http://farm"+farm+".static.flickr.com/"+server+"/"+id+"_"+secret+".jpg";
             System.out.println(photoUrl);
+            //get photoImg at each photoUrl
             Image photoImg = getImageURL(photoUrl);            
+            //create ImageIcon with each photoImg
             ImageIcon scaledImageIcon = new ImageIcon(getScaledImg(photoImg));
+            //create new Photo object with ImageIcon
             Photo photo = new Photo(scaledImageIcon);
+            //set photo variables to reflect input data
             photo.image = getScaledImg(photoImg);
             photo.url = photoUrl;
+            //add to photoArray
             photoArray.add(photo);
             System.out.println(photo);
         }
+        //Go through photoArray and add to onePanel
         Display();
 	onePanel.revalidate();
 	onePanel.repaint();
     }
     
     public void Display(){
+        //Go through photoArray and add each Photo to onePanel with actionListener
         for(int k=0; k<photoArray.size(); k++){
             Photo photo = photoArray.get(k);
             photo.addActionListener(this);
@@ -276,21 +296,26 @@ public class Gui extends JFrame implements ActionListener {
     }
     
     public Image getScaledImg(Image inputImg){
+            //create bufferedImg to manipulate inputImg
             BufferedImage bufferedImg = (BufferedImage) inputImg;
+            //create height nad width to store values
             double height = bufferedImg.getHeight();
             double width = bufferedImg.getWidth();
+            //create ratio to reflect 200 height aspect ratio
             double ratio = 200 / height;
+            //create scaledimg with getScaledInstance
             Image scaledImg = bufferedImg.getScaledInstance((int) (width*ratio), 200,BufferedImage.TYPE_INT_ARGB);
             return scaledImg;
     }
     
     public void Save(){
           try{
-            // Create file 
+            // Create file photo_album.txt
             String fileName = "./photo_album.txt";
             FileWriter fstream = new FileWriter(fileName);
             BufferedWriter out = new BufferedWriter(fstream);
             for(int i = 0; i < photoArray.size(); i++){
+                //write line with each photo's URL + a new line
                 out.write(photoArray.get(i).url + "\n");
                 System.out.println("Saving Image at: " + photoArray.get(i).url);
             }
@@ -309,11 +334,12 @@ public class Gui extends JFrame implements ActionListener {
         String line = null;
         System.out.println("Loading from: " + fileName);
         try {
-            // FileReader reads text files in the default encoding.
+            // FileReader reads from photo_album.txt
             FileReader fileReader = new FileReader(fileName);
             // Always wrap FileReader in BufferedReader.
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             while((line = bufferedReader.readLine()) != null) {
+            //utilize Test to fetch images at each url stored in photo_album.txt
                 Test(line);
             }   
             // Always close files.
@@ -330,6 +356,7 @@ public class Gui extends JFrame implements ActionListener {
             System.out.println("searchTagField: " + searchTagField.getText());
             String searchText = searchTagField.getText();
             try {
+            //search for searchText when search button is clicked
                 Search(searchText);
             } catch (MalformedURLException ex) {
                 Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
@@ -341,6 +368,7 @@ public class Gui extends JFrame implements ActionListener {
             System.out.println("Test button clicked-->testSearchTagField: " + searchTagField.getText());
             String testText = searchTagField.getText();
             try {
+            //test testText when test is clicked
                 Test(testText);
             } catch (MalformedURLException ex) {
                 Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
@@ -353,11 +381,13 @@ public class Gui extends JFrame implements ActionListener {
 	}
         else if (e.getSource() == saveButton){
             System.out.println("Save Button Clicked!");
+            //save URLS in photoArray to photo_album.txt when save is clicked
             Save();
         }
         else if (e.getSource() == loadButton){
             System.out.println("Load Button Clicked!");
             try {
+            //load images from photo_album.txt when clicked
                 Load();
             } catch (IOException ex) {
                 Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
@@ -365,19 +395,25 @@ public class Gui extends JFrame implements ActionListener {
         }
         else if (e.getSource() == deleteButton){
             System.out.println("Deleted item: " + select);
+            //remove selected item from photoArray
             photoArray.remove(deletePhoto);
+            //remove selected item form onePanel
             onePanel.remove(deletePhoto);
             onePanel.revalidate();
             onePanel.repaint();
         }
         else if (e.getSource() == exitButton){
+            //exit program when exit is clicked
             System.exit(0);
         }
         for( int a=0; a<onePanel.getComponentCount();a++){
+            //loop through each Photo in onePanel to listen for click
             Component photo = onePanel.getComponent(a);
             if(e.getSource() == photo){
+                //set select to equal the index of the selected photo
                 select = a;
                 System.out.println("Selected item at index: "+ a);
+                //set deletePhoto to selected photo
                 deletePhoto = (Photo) photo;
             }
         }
