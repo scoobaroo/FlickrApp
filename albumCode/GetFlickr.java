@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GPCode;
+package albumCode;
 
 import com.google.gson.Gson;
 import java.util.ArrayList;
-
 import java.awt.*;
 import java.io.IOException;
 import java.awt.event.*;
@@ -167,8 +166,7 @@ public class GetFlickr extends JFrame implements ActionListener {
         int responseCode = con.getResponseCode();
       	System.out.println("Response Code : " + responseCode);
       	// read and construct response String
-        BufferedReader in = new BufferedReader(new InputStreamReader
-					       (con.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
         while ((inputLine = in.readLine()) != null) {
@@ -314,21 +312,21 @@ public class GetFlickr extends JFrame implements ActionListener {
 
     public void Save(){
         try{
-          // Create file photo_album.txt
-          String fileName = "./photo_album.txt";
-          FileWriter fstream = new FileWriter(fileName);
-          BufferedWriter out = new BufferedWriter(fstream);
-          for(int i = 0; i < photoArray.size(); i++){
-              //write line with each photo's URL + a new line
-              out.write(photoArray.get(i).url + "\n");
-              System.out.println("Saving Image at: " + photoArray.get(i).url);
-          }
-          System.out.println("Saving to: " + fileName);
-          //Close the output stream
-          out.close();
-          }catch (Exception e){//Catch exception if any
-          System.err.println("Error: " + e.getMessage());
-          }
+            // Create file photo_album.txt
+            String fileName = "./photo_album.txt";
+            FileWriter fstream = new FileWriter(fileName);
+            BufferedWriter out = new BufferedWriter(fstream);
+            for(int i = 0; i < photoArray.size(); i++){
+                //write line with each photo's URL + a new line
+                out.write(photoArray.get(i).url + "\n");
+                System.out.println("Saving Image at: " + photoArray.get(i).url);
+            }
+            System.out.println("Saving to: " + fileName);
+            //Close the output stream
+            out.close();
+        }catch (Exception e){//Catch exception if any
+            System.err.println("Error: " + e.getMessage());
+        }
     }
 
     public void Load() throws MalformedURLException, IOException{
@@ -349,9 +347,7 @@ public class GetFlickr extends JFrame implements ActionListener {
             // Always close files.
             bufferedReader.close();
         }catch(FileNotFoundException ex) {
-            System.out.println(
-                "Unable to open file '" +
-                fileName + "'");
+            System.out.println("Unable to open file '" + fileName + "'");
         }
     }
 

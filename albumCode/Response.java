@@ -1,4 +1,4 @@
-package GPCode;
+package albumCode;
 
 class Response {
     App photos;
