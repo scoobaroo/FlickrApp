@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package albumCode;
 
 import com.google.gson.Gson;
@@ -28,6 +23,14 @@ import java.net.ProtocolException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+
+/**
+A Java class that enables querying of the Flickr database for image matching a specific tag.
+There are Search, Test, Save, Load, and Exit buttons. Search queries the Flickr database for
+images matching the tag input in the search text field. Save saves all the photo urls in photoArray
+into photo_album.txt. Load loads all the photos in photo_album.txt. Test fetches an image at given
+url. Exit exits the program.
+*/
 
 public class GetFlickr extends JFrame implements ActionListener {
     //create an ArrayList of Photos in photoArray
@@ -136,6 +139,11 @@ public class GetFlickr extends JFrame implements ActionListener {
       	oneScrollPanel.setViewportView(onePanel);
     }
 
+/**
+Main function of this Java program.
+@param args String[] type
+*/
+
     public static void main(String [] args) throws Exception {
       	GetFlickr frame = new GetFlickr();
       	frame.setTitle("Swing GUI Demo");
@@ -188,6 +196,12 @@ public class GetFlickr extends JFrame implements ActionListener {
       	onePanel.repaint();
     }
 
+/**
+Fetches image at url specified in testText. It resizes the image, create a new Photo with the resized image,
+then adds it to photoArray and onePanel.
+@param  url  String type testText
+*/
+
     public void Test(String testText) throws ProtocolException, MalformedURLException, IOException{
         System.out.println("Fetching image at: "+testText);
         // fetch image at testText
@@ -206,6 +220,15 @@ public class GetFlickr extends JFrame implements ActionListener {
         onePanel.revalidate();
 	      onePanel.repaint();
     }
+
+/**
+Creates a GET request at specified URL.
+@param  url  an absolute URL string giving the base location of the image
+@return responseObject an object of Response class
+@throws MalformedURLException if URL is malformed
+@throws ProtocolException if protocol exceptions occur
+@throws IOException if input/output exceptions occur
+*/
 
     public Response Get(String url) throws MalformedURLException, ProtocolException, IOException {
       	System.out.println("Get - Sending http GET request:");
@@ -234,6 +257,14 @@ public class GetFlickr extends JFrame implements ActionListener {
       	System.out.println("# photos = " + responseObject.photos.photo.length);
         return responseObject;
     }
+
+/**
+* Takes inputSearchText and replaces spaces with "%20". It forms a request URL with it and then passes
+it to the GET method for a responseObject. It parses the responseObject for parameters for each image,
+which is then passed to the getScaledImg method for a scaled Image. It uses this scaled Image for a new
+Photo object which it then adds to photoArray. It then calls display which adds each image to onePanel.
+* @param  inputSearchText  search Text in the search text field.
+*/
 
     public void Search(String inputSearchText) throws ProtocolException, MalformedURLException, IOException{
         // tag to search for
@@ -288,6 +319,10 @@ public class GetFlickr extends JFrame implements ActionListener {
       	onePanel.repaint();
     }
 
+/**
+This method goes through each Photo in photoArray and adds an actionListener to each Photo and adds it to onePanel.
+*/
+
     public void Display(){
         //Go through photoArray and add each Photo to onePanel with actionListener
         for(int k=0; k<photoArray.size(); k++){
@@ -296,6 +331,12 @@ public class GetFlickr extends JFrame implements ActionListener {
             onePanel.add(photo);
         }
     }
+
+/**
+This method takes an inputImage and resizes it to 200 pixel height while retaining aspect ratio.
+@param  inputImage Image that is desired to be resized.
+@return  scaledImg Image type that has been resized.
+*/
 
     public Image getScaledImg(Image inputImg){
         //create bufferedImg to manipulate inputImg
@@ -309,6 +350,11 @@ public class GetFlickr extends JFrame implements ActionListener {
         Image scaledImg = bufferedImg.getScaledInstance((int) (width*ratio), 200,BufferedImage.TYPE_INT_ARGB);
         return scaledImg;
     }
+
+/**
+This method goes through photoArray and saves each Photo's url in photo_album.txt.
+@throws Exception e if any occur
+*/
 
     public void Save(){
         try{
@@ -328,6 +374,12 @@ public class GetFlickr extends JFrame implements ActionListener {
             System.err.println("Error: " + e.getMessage());
         }
     }
+
+/**
+This method goes through photoArray and performs Test on each Photo's url in photo_album.txt to add each image
+to onePanel.
+@throws FileNotFoundException ex if file does not exist
+*/
 
     public void Load() throws MalformedURLException, IOException{
         // The name of the file to open.
@@ -350,6 +402,18 @@ public class GetFlickr extends JFrame implements ActionListener {
             System.out.println("Unable to open file '" + fileName + "'");
         }
     }
+
+/**
+This method maps mouse clicks to each specific button. If searchButton is clicked, it performs the search function
+on the text in the search text field. If testButton is clicked, it perform the test function on the text url in the
+search text field. If saveButton is clicked, save is performed and photo_album.txt is created. if loadButton is clicked,
+each url in photo_album.txt is tested and added to onePanel. If exit is clicked, program exits. If a Photo is clicked in
+onePanel, the program will remember the Photo's index in onePanel so that it can be deleted. If deleteButton is clicked,
+last selected photo will be deleted.
+@param e ActionEvent type (mouseClick)
+@throws MalformedURLException if malformed URL occurs.
+@throws IOException if input or output exceptions occur.
+*/
 
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == searchButton) {
@@ -419,7 +483,13 @@ public class GetFlickr extends JFrame implements ActionListener {
         }
     }
 
-    // get image at URL loc
+/**
+This method attempts to retrieve an image at the specified location in url.
+@param loc location(url) string where Image can be fetched.
+@return img Image type retrieved from loc.
+@throws Exception e if any occur
+*/
+
     static Image getImageURL(String loc) {
         Image img = null;
         try {
