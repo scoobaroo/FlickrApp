@@ -259,11 +259,12 @@ Creates a GET request at specified URL.
     }
 
 /**
-* Takes inputSearchText and replaces spaces with "%20". It forms a request URL with it and then passes
+Takes inputSearchText and replaces spaces with "%20". It takes the number in numResultsStr text field
+and adds that amount to the number of images requested. It forms a request URL with it and then passes
 it to the GET method for a responseObject. It parses the responseObject for parameters for each image,
 which is then passed to the getScaledImg method for a scaled Image. It uses this scaled Image for a new
 Photo object which it then adds to photoArray. It then calls display which adds each image to onePanel.
-* @param  inputSearchText  search Text in the search text field.
+@param  inputSearchText  search Text in the search text field.
 */
 
     public void Search(String inputSearchText) throws ProtocolException, MalformedURLException, IOException{
@@ -333,7 +334,9 @@ This method goes through each Photo in photoArray and adds an actionListener to 
     }
 
 /**
-This method takes an inputImage and resizes it to 200 pixel height while retaining aspect ratio.
+This method takes an inputImage and creates a BufferedImage with it.
+It uses the buffered image to get its width and height and then creates an aspect ratio.
+It then resizes the image to 200 pixel height while retaining aspect ratio.
 @param  inputImage Image that is desired to be resized.
 @return  scaledImg Image type that has been resized.
 */
